@@ -1,0 +1,9 @@
+---
+# tasks file for setting up nginx
+- name: ensure nginx is at the latest version
+  apt: name=nginx state=present
+
+- name: start nginx
+  service:
+    name: nginx
+    state: started

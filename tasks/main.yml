@@ -1,0 +1,65 @@
+---
+# tasks file for seting up kibana
+- include: setup-nginx.yml
+
+   
+- name: Add Kibana repository key
+  apt_key:
+    keyserver: "{{ kibana_apt_keyserver }}"
+    id: "{{ kibana_apt_key_id[kibana_version] }}"
+
+- name: Install kibana Repository
+  apt_repository:
+    repo: "{{ kibana_repository[kibana_version] }}"
+    state: present
+    filename: kibana
+- name: Install apt-transport-https
+  apt: name=apt-transport-https state=present
+
+- name: Install kibana Package
+  apt:
+    name: "kibana"
+    state: present
+    update_cache: true
+  register: result
+  retries: 5
+  delay: 10
+  until: result is succeeded
+
+- name: kibana | kibana
+  service:
+    name: kibana
+    state: started
+    enabled: yes
+  become: yes
+  tags:
+  - kibana
+
+- name: Copy nginx configuration.
+  template:
+    src: default
+    dest: /etc/nginx/sites-available/
+    owner: root
+    group: root
+    mode: 0644
+    force: yes
+
+- name: clean existing nginx files from site-enabled
+  command: rm -rfv /etc/nginx/sites-enabled/*
+
+- name: Link default to sites-enabled
+  file:
+    src: /etc/nginx/sites-available/default
+    dest: /etc/nginx/sites-enabled/default
+    state: link
+
+- name: start nginx
+  service:
+    name: nginx
+    state: restarted
+
+- name: Ensure Kibana is started and enabled at boot.
+  service:
+    name: kibana
+    state: started
+    enabled: true
