@@ -18,7 +18,7 @@
 
 - name: Install kibana Package
   apt:
-    name: "kibana"
+    name: "kibana=8.2.3"
     state: present
     update_cache: true
   register: result
