@@ -1,0 +1,9 @@
+---
+# vars file for setup-kibana
+kibana_repository:
+  "8.2": "deb https://artifacts.elastic.co/packages/8.x/apt stable main"
+
+logstash_apt_keyserver: keyserver.ubuntu.com
+
+logstash_apt_key_id:
+  "8.2": "46095ACC8548582C1A2699A9D27D666CD88E42B4"
